@@ -1,0 +1,25 @@
+{
+  "name": "async-flow",
+  "version": "0.1.0",
+  "dependencies": {},
+  "devDependencies": {
+    "mocha": "",
+    "chai": ""
+  },
+  "engines": {
+    "node": ">0.8.0"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "main": "./lib/async-flow",
+  "author": "ww24",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/ww24/async-flow.git"
+  },
+  "keywords": [
+    "async",
+    "flow"
+  ]
+}
