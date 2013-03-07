@@ -5,6 +5,8 @@
 > Async Flow は非同期メソッドの制御フローを提供します。
 
 ## Example
+`npm install async-flow`
+
 ```js
 var flow = require("async-flow");
 
