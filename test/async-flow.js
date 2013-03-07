@@ -11,7 +11,7 @@ describe("async-flow", function () {
       setTimeout(function () {
         results.push(1);
         parallelA.results[0].should.to.equal(1);
-        next("ok?");
+        next("A");
       }, 50);
       return 1;
     });
@@ -21,7 +21,7 @@ describe("async-flow", function () {
       setTimeout(function () {
         results.push(2);
         parallelB.results[0].should.to.equal(2);
-        next();
+        next("B", "0");
       }, 150);
       return 2;
     });
@@ -31,19 +31,25 @@ describe("async-flow", function () {
       setTimeout(function () {
         results.push(3);
         parallelC.results[0].should.to.equal(3);
-        next();
+        next("1", "2", "C");
       }, 100);
       return 3;
     });
     
     var parallelFlow = flow.create(parallelA, parallelB, parallelC)
-      .flow(function (next, skip) {
+      .flow(function (next, skip, argA, argB1, argB2, argC1, argC2, argC3) {
         results.should.to.eql([1, 3, 2]);
+        argA.should.to.equal("A");
+        argB1.should.to.equal("B");
+        argB2.should.to.equal("0");
+        argC1.should.to.equal("1");
+        argC2.should.to.equal("2");
+        argC3.should.to.equal("C");
         next("testA");
       });
     
     parallelA.flow(function (next, skip, arg1) {
-      arg1.should.to.equal("ok?");
+      arg1.should.to.equal("A");
       setTimeout(function () {
         next("testB");
       }, 100);
