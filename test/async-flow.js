@@ -126,4 +126,30 @@ describe("async-flow", function () {
       done();
     });
   });
+  
+  it("sequential sync skip", function (done) {
+    var sequential = flow.create();
+    sequential.flow(function (next, skip) {
+      skip(2, "skip");
+    });
+    sequential.flow(function (next) {
+      next();
+    });
+    sequential.flow(function (next) {
+      next();
+    });
+    sequential.flow(function (next, skip, arg1) {
+      arg1.should.to.equal("skip");
+      next();
+    });
+    sequential.flow(function (next) {
+      arguments.length.should.to.equal(2);
+      next("passing");
+    });
+    sequential.flow(function (next, skip, arg1) {
+      arg1.should.to.equal("passing");
+      next();
+      done();
+    });
+  });
 });
