@@ -7,7 +7,7 @@ describe("async-flow", function () {
     var results = [];
     
     var parallelA = flow.create();
-    parallelA.flow(function (next, skip) {
+    parallelA.flow(function (next) {
       setTimeout(function () {
         results.push(1);
         parallelA.results[0].should.to.equal(1);
@@ -17,7 +17,7 @@ describe("async-flow", function () {
     });
     
     var parallelB = flow.create();
-    parallelB.flow(function (next, skip) {
+    parallelB.flow(function (next) {
       setTimeout(function () {
         results.push(2);
         parallelB.results[0].should.to.equal(2);
@@ -27,7 +27,7 @@ describe("async-flow", function () {
     });
     
     var parallelC = flow.create();
-    parallelC.flow(function (next, skip) {
+    parallelC.flow(function (next) {
       setTimeout(function () {
         results.push(3);
         parallelC.results[0].should.to.equal(3);
@@ -68,7 +68,7 @@ describe("async-flow", function () {
     var results = [];
     
     var sequential = flow.create();
-    sequential.flow(function (next, skip) {
+    sequential.flow(function (next) {
       setTimeout(function () {
         results.push(1);
         sequential.results[0].should.to.equal(1);
@@ -112,16 +112,17 @@ describe("async-flow", function () {
         skip(2, "skip");
       }, 200);
     });
-    sequential.flow(function (next, skip) {
+    sequential.flow(function (next) {
       setTimeout(function () {
         next();
       }, 100);
     });
-    sequential.flow(function (next, skip) {
+    sequential.flow(function (next) {
       next();
     });
     sequential.flow(function (next, skip, arg1) {
       arg1.should.to.equal("skip");
+      next();
       done();
     });
   });
