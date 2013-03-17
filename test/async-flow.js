@@ -64,6 +64,58 @@ describe("async-flow", function () {
       });
   });
   
+  it("parallel sync results", function (done) {
+    var parallelA = flow.create().flow(function (next) {
+      setTimeout(function () {
+        next("a");
+      }, 10);
+      return 0;
+    });
+    
+    var parallelB = flow.create().flow(function (next) {
+      setTimeout(function () {
+        next("b");
+      }, 10);
+      return 1;
+    });
+    
+    var parallelC = flow.create(parallelA, parallelB).flow(function (next) {
+      [].slice.call(arguments, 2).should.to.eql(["a", "b"]);
+      setTimeout(function () {
+        next("c");
+      }, 10);
+      return 2;
+    });
+    
+    parallelA.flow(function (next) {
+      [].slice.call(arguments, 2).should.to.eql(["a"]);
+      next("A");
+      return "zero";
+    });
+    
+    parallelB.flow(function (next) {
+      [].slice.call(arguments, 2).should.to.eql(["b"]);
+      next("B");
+      return "one";
+    });
+    
+    parallelC.flow(function (next) {
+      [].slice.call(arguments, 2).should.to.eql(["c"]);
+      next("C");
+      return "two";
+    });
+    
+    flow.create(parallelA, parallelB, parallelC).flow(function (next) {
+      [].slice.call(arguments, 2).should.to.eql(["A", "B", "C"]);
+      parallelA.results.should.to.eql([0, "zero"]);
+      parallelB.results.should.to.eql([1, "one"]);
+      parallelC.results.should.to.eql([2, "two"]);
+      next();
+      done();
+    });
+    
+  });
+  
   it("sequential", function (done) {
     var results = [];
     
@@ -148,6 +200,36 @@ describe("async-flow", function () {
     });
     sequential.flow(function (next, skip, arg1) {
       arg1.should.to.equal("passing");
+      next();
+      done();
+    });
+  });
+  
+  it("check context", function (done) {
+    var sequential = flow.create();
+    sequential.flow(function (next) {
+      next.call({check: "ok"});
+    });
+    sequential.flow(function (next, skip) {
+      this.check.should.to.equal("ok");
+      skip.call({check: "skip"}, 1);
+    });
+    sequential.flow(function (next) {
+      next();
+    });
+    sequential.flow(function (next) {
+      this.check.should.to.equal("skip");
+      next.call({check: "ok"});
+    });
+    var seq = flow.create();
+    seq.flow(function (next) {
+      setTimeout(next, 100);
+    });
+    flow.create(sequential, seq).flow(function (next) {
+      next();
+    });
+    sequential.flow(function (next) {
+      this.check.should.to.equal("ok");
       next();
       done();
     });
