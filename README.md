@@ -4,6 +4,15 @@
 
 > Async Flow は非同期メソッドの制御フローを提供します。
 
+Support
+----------------------------------------
+* Node.js v0.8 +
+* Chrome
+* Safari
+* Firefox
+* Opera
+* IE9 +
+
 Example
 ----------------------------------------
 `npm install async-flow`
@@ -53,16 +62,17 @@ flow.create(flow4, flow5)
 
 API Documentation
 ----------------------------------------
-#### flow = require("async-flow")
-> create method だけを持つ Object  
-> 
+### Flow Class
 
-#### flow.create([Flow1, Flow2, ...])
+#### Flow.create([Flow1, Flow2, ...])
+> new 演算子を使わないためのインターフェース  
 > 新しい Flow を生成するための method  
 > Flow Class の instance が返される。  
 > 引数に Flow Class の instance を可変長個渡すと、全ての Flow が完了すると流れ出す新しい Flow を生成する。
 
-### Flow Class
+#### new Flow(Array<Flow>)
+> new 演算子を使って instance を生成する。  
+> Flow.create との違いは引数を配列で渡す点のみ。
 
 #### #flow(Function callback) -> Flow
 > 制御フローを流すための method  

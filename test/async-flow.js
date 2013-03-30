@@ -1,6 +1,15 @@
-var mocha = require("mocha"),
-    should = require("chai").should(),
-    flow = require("../lib/async-flow");
+/**
+ * Async-Flow Test
+ * Support: Node.js and Browser
+ */
+
+if (typeof window === "undefined")
+  var mocha = require("mocha"),
+      expect = require("chai").expect,
+      flow = require("../lib/async-flow");
+else
+  var expect = chai.expect,
+      flow = Flow;
 
 describe("async-flow", function () {
   it("parallel", function (done) {
@@ -10,7 +19,7 @@ describe("async-flow", function () {
     parallelA.flow(function (next) {
       setTimeout(function () {
         results.push(1);
-        parallelA.results[0].should.to.equal(1);
+        expect(parallelA.results[0]).to.equal(1);
         next("A");
       }, 50);
       return 1;
@@ -20,7 +29,7 @@ describe("async-flow", function () {
     parallelB.flow(function (next) {
       setTimeout(function () {
         results.push(2);
-        parallelB.results[0].should.to.equal(2);
+        expect(parallelB.results[0]).to.equal(2);
         next("B", "0");
       }, 150);
       return 2;
@@ -30,7 +39,7 @@ describe("async-flow", function () {
     parallelC.flow(function (next) {
       setTimeout(function () {
         results.push(3);
-        parallelC.results[0].should.to.equal(3);
+        expect(parallelC.results[0]).to.equal(3);
         next("1", "2", "C");
       }, 100);
       return 3;
@@ -38,18 +47,18 @@ describe("async-flow", function () {
     
     var parallelFlow = flow.create(parallelA, parallelB, parallelC)
       .flow(function (next, skip, argA, argB1, argB2, argC1, argC2, argC3) {
-        results.should.to.eql([1, 3, 2]);
-        argA.should.to.equal("A");
-        argB1.should.to.equal("B");
-        argB2.should.to.equal("0");
-        argC1.should.to.equal("1");
-        argC2.should.to.equal("2");
-        argC3.should.to.equal("C");
+        expect(results).to.eql([1, 3, 2]);
+        expect(argA).to.equal("A");
+        expect(argB1).to.equal("B");
+        expect(argB2).to.equal("0");
+        expect(argC1).to.equal("1");
+        expect(argC2).to.equal("2");
+        expect(argC3).to.equal("C");
         next("testA");
       });
     
     parallelA.flow(function (next, skip, arg1) {
-      arg1.should.to.equal("A");
+      expect(arg1).to.equal("A");
       setTimeout(function () {
         next("testB");
       }, 100);
@@ -57,8 +66,8 @@ describe("async-flow", function () {
     
     flow.create(parallelFlow, parallelA)
       .flow(function (next, skip, arg1, arg2) {
-        arg1.should.to.equal("testA");
-        arg2.should.to.equal("testB");
+        expect(arg1).to.equal("testA");
+        expect(arg2).to.equal("testB");
         next();
         done();
       });
@@ -80,7 +89,7 @@ describe("async-flow", function () {
     });
     
     var parallelC = flow.create(parallelA, parallelB).flow(function (next) {
-      [].slice.call(arguments, 2).should.to.eql(["a", "b"]);
+      expect([].slice.call(arguments, 2)).to.eql(["a", "b"]);
       setTimeout(function () {
         next("c");
       }, 10);
@@ -88,28 +97,28 @@ describe("async-flow", function () {
     });
     
     parallelA.flow(function (next) {
-      [].slice.call(arguments, 2).should.to.eql(["a"]);
+      expect([].slice.call(arguments, 2)).to.eql(["a"]);
       next("A");
       return "zero";
     });
     
     parallelB.flow(function (next) {
-      [].slice.call(arguments, 2).should.to.eql(["b"]);
+      expect([].slice.call(arguments, 2)).to.eql(["b"]);
       next("B");
       return "one";
     });
     
     parallelC.flow(function (next) {
-      [].slice.call(arguments, 2).should.to.eql(["c"]);
+      expect([].slice.call(arguments, 2)).to.eql(["c"]);
       next("C");
       return "two";
     });
     
     flow.create(parallelA, parallelB, parallelC).flow(function (next) {
-      [].slice.call(arguments, 2).should.to.eql(["A", "B", "C"]);
-      parallelA.results.should.to.eql([0, "zero"]);
-      parallelB.results.should.to.eql([1, "one"]);
-      parallelC.results.should.to.eql([2, "two"]);
+      expect([].slice.call(arguments, 2)).to.eql(["A", "B", "C"]);
+      expect(parallelA.results).to.eql([0, "zero"]);
+      expect(parallelB.results).to.eql([1, "one"]);
+      expect(parallelC.results).to.eql([2, "two"]);
       next();
       done();
     });
@@ -123,7 +132,7 @@ describe("async-flow", function () {
     sequential.flow(function (next) {
       setTimeout(function () {
         results.push(1);
-        sequential.results[0].should.to.equal(1);
+        expect(sequential.results[0]).to.equal(1);
         next("hoge");
       }, 50);
       return 1;
@@ -131,8 +140,8 @@ describe("async-flow", function () {
     sequential.flow(function (next, skip, arg1) {
       setTimeout(function () {
         results.push(2);
-        sequential.results[1].should.to.equal(2);
-        arg1.should.to.equal("hoge");
+        expect(sequential.results[1]).to.equal(2);
+        expect(arg1).to.equal("hoge");
         next(arg1, 200);
       }, 150);
       return 2;
@@ -140,18 +149,18 @@ describe("async-flow", function () {
     sequential.flow(function (next, skip, arg1, arg2) {
       setTimeout(function () {
         results.push(3);
-        sequential.results[2].should.to.equal(3);
-        arg1.should.to.equal("hoge");
-        arg2.should.to.equal(200);
+        expect(sequential.results[2]).to.equal(3);
+        expect(arg1).to.equal("hoge");
+        expect(arg2).to.equal(200);
         next(arg1, arg2, ["array"]);
       }, 100);
       return 3;
     });
     sequential.flow(function (next, skip, arg1, arg2, arg3) {
-      results.should.to.eql([1, 2, 3]);
-      arg1.should.to.equal("hoge");
-      arg2.should.to.equal(200);
-      arg3.should.to.eql(["array"]);
+      expect(results).to.eql([1, 2, 3]);
+      expect(arg1).to.equal("hoge");
+      expect(arg2).to.equal(200);
+      expect(arg3).to.eql(["array"]);
       next();
       done();
     });
@@ -173,7 +182,7 @@ describe("async-flow", function () {
       next();
     });
     sequential.flow(function (next, skip, arg1) {
-      arg1.should.to.equal("skip");
+      expect(arg1).to.equal("skip");
       next();
       done();
     });
@@ -191,15 +200,15 @@ describe("async-flow", function () {
       next();
     });
     sequential.flow(function (next, skip, arg1) {
-      arg1.should.to.equal("skip");
+      expect(arg1).to.equal("skip");
       next();
     });
     sequential.flow(function (next) {
-      arguments.length.should.to.equal(2);
+      expect(arguments.length).to.equal(2);
       next("passing");
     });
     sequential.flow(function (next, skip, arg1) {
-      arg1.should.to.equal("passing");
+      expect(arg1).to.equal("passing");
       next();
       done();
     });
@@ -211,14 +220,14 @@ describe("async-flow", function () {
       next.call({check: "ok"});
     });
     sequential.flow(function (next, skip) {
-      this.check.should.to.equal("ok");
+      expect(this.check).to.equal("ok");
       skip.call({check: "skip"}, 1);
     });
     sequential.flow(function (next) {
       next();
     });
     sequential.flow(function (next) {
-      this.check.should.to.equal("skip");
+      expect(this.check).to.equal("skip");
       next.call({check: "ok"});
     });
     var seq = flow.create();
@@ -229,7 +238,7 @@ describe("async-flow", function () {
       next();
     });
     sequential.flow(function (next) {
-      this.check.should.to.equal("ok");
+      expect(this.check).to.equal("ok");
       next();
       done();
     });

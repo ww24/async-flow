@@ -1,16 +1,17 @@
 {
   "name": "async-flow",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "dependencies": {},
   "devDependencies": {
     "mocha": "",
-    "chai": ""
+    "chai": "",
+    "mocha-phantomjs": ""
   },
   "engines": {
     "node": ">0.8.0"
   },
   "scripts": {
-    "test": "mocha"
+    "test": "mocha && mocha-phantomjs test/browser/index.html"
   },
   "main": "./lib/async-flow",
   "author": "ww24",
